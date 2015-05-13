@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<project name="mysamplePRO" default="build">
+ 
+<property name="SourceFile" value="Z:\" overwrite="false" />   
+<property name="folder.current" value="${SourceFile}" />
+	<echo message="${arg.targetLocation} from ${arg.targetFile}" />
+	<target name="CompareFiles">
+
+   	<foreach item="Folder" in="${folder.current}" property="foldername">
+		<foreach item="File" property="filename" in="${foldername}">
+    			<do>
+    				<!--<echo message="${filename}" />-->
+				<property name="TargetFileName" value="${string::replace(filename, 'Z:\', 'Y:\')}" />
+
+				<if test="${string::contains(string::to-upper(filename), '.ISO')}">
+    					<if test="${not file::exists(TargetFileName)}">
+						<echo message="${TargetFileName} not exists" />
+					</if>
+				</if>
+    			</do>
+    		</foreach>
+        	<property name="folder.current" value="${foldername}" />
+        	<call target="CompareFiles" />
+    	</foreach>
+
+	</target>
+</project>
