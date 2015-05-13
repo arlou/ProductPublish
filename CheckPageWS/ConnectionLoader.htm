@@ -1,0 +1,564 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title>Connection Loader</title>
+   
+    <style>
+      .iFramePageStyle {width: 400px; height: 100px}
+      .iFrameWSStyle {width: 550px; height: 100px}
+    </style>
+   
+    <script language=javascript type="text/javascript">
+    
+    var TargetIPAddress = ''
+    
+    //214
+    var ERP_WF_Page_Src = ''
+    var ERP_WF_WS_Src = 'http://{IP}/WFCROSS/WFCROSSService.asmx?wsdl'
+    
+    var ERP_SM_Page_Src = ''
+    var ERP_SM_WS_Src = ''
+    
+    var ERP_CM_Page_Src = ''
+    var ERP_CM_WS_Src = ''
+    
+    var ERP_YF_Page_Src = ''
+    var ERP_YF_WS_Src = ''
+    
+    var ERP_T_Page_Src = ''
+    var ERP_T_WS1_Src = ''
+    var ERP_T_WS2_Src = ''
+    var ERP_T_WS3_Src = ''
+    
+    /*
+    var ERP_T_Page_Src = 'http://{IP}/tiptop.html'
+    var ERP_T_WS1_Src = 'http://{IP}/web/ws/r/aws_ttsrv2?wsdl'
+    var ERP_T_WS2_Src = 'http://{IP}:6384/web/ws/r/aws_ttsrv2?wsdl'
+    var ERP_T_WS3_Src = 'http://{IP}/web/ws/r/aws_ttsrv2?wsdl'
+    */
+    
+    var ERP_E10_Page_Src = ''
+    var ERP_E10_WS_Src = ''
+    
+    //214
+    var EAI_Page_Src = 'http://{IP}:9990/CROSS'
+    var EAI_WS_Src = 'http://{IP}:9999/IntegrationEntry?wsdl'
+    
+    //214
+    var BPMJava_Page_Src = 'http://{IP}:8086/NaNaWeb'
+    var BPMJava_WS_Src = 'http://{IP}:8086/NaNaWeb/services/CrossIntegrationEFGP?wsdl'
+    
+    //214
+    var Portal_Page_Src = 'http://{IP}:8081/index.jsp'
+    var Portal_WS_Src = 'http://{IP}:8081/WebServiceCROSS/PortalCROSSWS?wsdl'
+    
+    //214
+    var PLM_Page_Src = ''
+    var PLM_WS_Src = 'http://{IP}:8080/axis2/services/ERPIService?wsdl'
+    
+    //214
+    var BPMNet_Page_Src = 'http://{IP}/EFNET'
+    var BPMNet_WS_Src = 'http://{IP}/EFNETService/EFERPService.asmx?wsdl'
+
+    /*
+    var BI_Page_Src = 'http://{IP}:8080/InfoViewApp'
+    var BI_WS_Src = 'http://{IP}:8080/InfoViewApp/services/VpCrossService?wsdl'
+    */
+    
+    //214
+    var CRM_Page_Src = 'http://{IP}/WebCRM'
+    var CRM_WS_Src = 'http://{IP}/WebCRM/WebService/ICRMForCROSS/ICRMForCROSS.asmx?WSDL'    
+    
+    //OK, 214
+    var HRM_Page_Src = ''
+    var HRM_WS_Src = 'http://{IP}/hrws/Integration.asmx?wsdl'   
+    
+    //OK, 214
+    //var ESS_Page_Src = 'http://{IP}/HRMESS'
+    var ESS_Page_Src = 'http://{IP}/HRMESS/redirect.aspx'
+    var ESS_WS_Src = 'http://{IP}/HRMESS/web_service/AppFormCROSSService.asmx?wsdl'    
+    
+    //OK, 214
+    var MB_Page_Src = 'http://{IP}/MobileSite/mcloudmanage'
+    var MB_WS_Src = 'http://{IP}/MobileSite/CROSSWebService.asmx?wsdl'  
+    
+    //214
+    var SFT_Page_Src = 'http://{IP}:8100/SFT' 
+    var SFT_WS_Src = 'http://{IP}:8100/SFT/services/SFTService?wsdl'  
+    
+    //214
+    var APS_Page_Src = '' //CS琜篶
+    var APS_WS_Src = 'http://{IP}/APSWebService/APSService.asmx?WSDL'
+    
+    //214
+    var EKB_Page_Src = 'http://{IP}:7100/KanBan'
+    var EKB_WS_Src = ''  //礚WS
+   
+    
+    
+    function detectChange(pProduct, pURL, pType)
+    {
+        var tempPageWSID = pProduct+'_'+pType;
+        var tempLabelID = tempPageWSID+'_Label';
+        if (pURL == '')
+        {
+            document.getElementById(tempLabelID).textContent  = 'セ诀砏购ぃ杆玻珇 or 玻珇獶呼摸';
+            document.getElementById(tempLabelID).style.color = 'black';
+            //document.getElementById(tempPageWSID).setAttribute('src',pURL);
+            document.getElementById(tempPageWSID).style.height = '0px';
+        }
+        else
+        {
+            if(getUrl(pURL))
+            {
+                document.getElementById(tempLabelID).textContent  = 'OK'+pURL;
+                document.getElementById(tempLabelID).style.color = 'black';
+                //document.getElementById(tempPageWSID).setAttribute('src',pURL);
+                document.getElementById(tempPageWSID).style.height = '0px';
+            }
+            else
+            {
+                //if (pProduct == 'EAI' || pProduct == 'BPMJava' || pProduct == 'Portal' || pProduct == 'PLM' || pProduct == 'SFT' || pProduct == 'APS' || pProduct == 'EKB')
+                if (pProduct == 'EAI')
+                    document.getElementById(tempLabelID).textContent  = 'Fail 礚猭硈絬翴и絋粄à[EAI狝叭]Τ⊿Τ秨';           
+                else if (pProduct == 'BPMJava')
+                    document.getElementById(tempLabelID).textContent  = 'Fail 礚猭硈絬翴и絋粄[EFGPxxxxx]Τ⊿Τ秨';
+                else if (pProduct == 'Portal')
+                    document.getElementById(tempLabelID).textContent  = 'Fail 礚猭硈絬翴и絋粄[DigiWin Portal]Τ⊿Τ秨';
+                else if (pProduct == 'PLM')
+                    document.getElementById(tempLabelID).textContent  = 'Fail 礚猭硈絬翴и絋粄[俱狝竟]Τ⊿Τ秨';
+                else if (pProduct == 'SFT')
+                    document.getElementById(tempLabelID).textContent  = 'Fail 礚猭硈絬翴и絋粄[SFT Server]Τ⊿Τ秨';
+                else if (pProduct == 'EKB')
+                    document.getElementById(tempLabelID).textContent  = 'Fail 礚猭硈絬翴и絋粄[eKanban Server]Τ⊿Τ秨';
+                else
+                    document.getElementById(tempLabelID).textContent  = 'Fail'+pURL;
+                document.getElementById(tempLabelID).style.color = 'red';
+                document.getElementById(tempPageWSID).style.height = '0px';  
+            }
+        }
+    }
+    
+    
+    function getUrl(URL)  
+    { 
+        var xmlhttp = new ActiveXObject("microsoft.xmlhttp"); 
+        //var xmlhttp;
+        /*
+        if (window.XMLHttpRequest)
+        {// code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp=new XMLHttpRequest();
+        }
+        else
+        {// code for IE6, IE5
+              xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+      */
+      
+        xmlhttp.Open("GET",URL, false);  
+        try 
+        {  
+            xmlhttp.Send(); 
+        } 
+        catch(e){} 
+        finally  
+        { 
+            var result = xmlhttp.responseText; 
+            if(result)  
+            { 
+                if(xmlhttp.Status==200) 
+                    return(true); 
+                else  
+                    return(false); 
+            } 
+            else  
+            return(false); 
+        } 
+    } 
+    
+    function loadIframePages()
+    {
+        var tempAddress = '';
+        TargetIPAddress = document.getElementById('TargetIPAddressTXT').value;
+
+               
+        //传ERP_WF
+        //传ERP_WFpage
+        detectChange('ERP_WF', ERP_WF_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        detectChange('ERP_WF', ERP_WF_WS_Src.replace("{IP}", TargetIPAddress), 'WS')
+              
+        
+        //传ERP_SM
+        //传ERP_SMpage
+        detectChange('ERP_SM', ERP_SM_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        detectChange('ERP_SM', ERP_SM_WS_Src.replace("{IP}", TargetIPAddress), 'WS')
+       
+   
+        //传ERP_CM
+        //传ERP_CMpage
+        detectChange('ERP_CM', ERP_CM_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        detectChange('ERP_CM', ERP_CM_WS_Src.replace("{IP}", TargetIPAddress), 'WS')
+       
+        
+        
+        //传ERP_YF
+        //传ERP_YFpage
+        detectChange('ERP_YF', ERP_YF_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        detectChange('ERP_YF', ERP_YF_WS_Src.replace("{IP}", TargetIPAddress), 'WS')
+       
+        
+        //传ERP_T
+        //传ERP_Tpage
+        detectChange('ERP_T', ERP_T_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        detectChange('ERP_T', ERP_T_WS1_Src.replace("{IP}", TargetIPAddress), 'WS1')
+        detectChange('ERP_T', ERP_T_WS2_Src.replace("{IP}", TargetIPAddress), 'WS2')
+        detectChange('ERP_T', ERP_T_WS3_Src.replace("{IP}", TargetIPAddress), 'WS3')
+                
+        
+        //传ERP_E10
+        //传ERP_E10page
+        detectChange('ERP_E10', ERP_E10_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        detectChange('ERP_E10', ERP_E10_WS_Src.replace("{IP}", TargetIPAddress), 'WS')
+       
+        
+        //传EAI
+        //传EAIpage
+        detectChange('EAI', EAI_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        detectChange('EAI', EAI_WS_Src.replace("{IP}", TargetIPAddress), 'WS')
+
+        //传BPM.Java
+        detectChange('BPMJava', BPMJava_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        detectChange('BPMJava', BPMJava_WS_Src.replace("{IP}", TargetIPAddress), 'WS')
+        
+        
+        //传Portal
+        //传Portalpage
+        detectChange('Portal', Portal_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        detectChange('Portal', Portal_WS_Src.replace("{IP}", TargetIPAddress), 'WS')
+       
+              
+        //传PLM
+        //传PLMpage
+        detectChange('PLM', PLM_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        detectChange('PLM', PLM_WS_Src.replace("{IP}", TargetIPAddress), 'WS')
+       
+        
+        //传BPMNet
+        //传BPMNetpage
+        detectChange('BPMNet', BPMNet_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        detectChange('BPMNet', BPMNet_WS_Src.replace("{IP}", TargetIPAddress), 'WS')
+       
+        
+        //传BI
+        //传BIpage
+        //detectChange('BI', BI_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        //detectChange('BI', BI_WS_Src.replace("{IP}", TargetIPAddress), 'WS')
+            
+        
+        //传CRM
+        //传CRMpage
+        detectChange('CRM', CRM_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        detectChange('CRM', CRM_WS_Src.replace("{IP}", TargetIPAddress), 'WS')
+      
+        
+        
+        //传HRM
+        //传HRMpage
+        detectChange('HRM', HRM_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        detectChange('HRM', HRM_WS_Src.replace("{IP}", TargetIPAddress), 'WS')
+        
+        //传ESS
+        //传ESSpage
+        detectChange('ESS', ESS_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        detectChange('ESS', ESS_WS_Src.replace("{IP}", TargetIPAddress), 'WS')
+        
+        //传MB
+        //传MBpage
+        detectChange('MB', MB_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        detectChange('MB', MB_WS_Src.replace("{IP}", TargetIPAddress), 'WS')
+              
+        //传SFT
+        //传SFTpage
+        detectChange('SFT', SFT_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        detectChange('SFT', SFT_WS_Src.replace("{IP}", TargetIPAddress), 'WS')
+       
+       //传APS
+        //传APSpage
+        detectChange('APS', APS_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        detectChange('APS', APS_WS_Src.replace("{IP}", TargetIPAddress), 'WS')
+        
+        //传EKB
+        //传EKBpage
+        detectChange('EKB', EKB_Page_Src.replace("{IP}", TargetIPAddress), 'Page')
+        detectChange('EKB', EKB_WS_Src.replace("{IP}", TargetIPAddress), 'WS')
+        
+        alert('诀:'+ TargetIPAddress +' 喷靡ЧΘ!');
+        
+    }
+    
+    function OpenWinForDetail(pProduct)
+    {
+        var tURL = '';
+        tURL = eval(pProduct.replace("Label","Src"))
+        if (tURL != '')
+        {        
+            tURL = tURL.replace("{IP}", TargetIPAddress)
+            window.open(tURL);
+        }
+    }
+    </script>
+    
+    
+</head>
+<body onload="loadIframePages()">
+<!--<body">-->
+    <div style="text-align: left">
+    <input id="TargetIPAddressTXT" type="text" value="10.40.80.214"></input><input id="check" type="button" value="硈絬喷靡" onclick="loadIframePages()"></input><BR>
+    <!--<progress id="MyProgressBar" value="3" max="100"></progress>-->
+        <table border="5" style="width: 960px; height: 470px">
+            <tr>
+                <td style="width: 30px">
+                    玻珇嘿</td>
+                <td style="width: 400px">
+                    祅</td>
+                <td style="">
+                    俱Web Service</td>
+            </tr>
+            <tr>
+                <td style="width: 30px">
+                    ERP_WF</td>
+                <td style="width: 438px;">
+                <label id="ERP_WF_Page_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="ERP_WF_Page" src="" class="iFramePageStyle"></iframe>
+                </td>
+                <td style="width: 101px;">
+                <label id="ERP_WF_WS_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="ERP_WF_WS" src="" class="iFrameWSStyle"></iframe>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 30px">
+                    ERP_SM</td>
+                <td style="width: 438px;">
+                <label id="ERP_SM_Page_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="ERP_SM_Page" src="" class="iFramePageStyle"></iframe>
+                </td>
+                <td style="width: 101px;">
+                <label id="ERP_SM_WS_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="ERP_SM_WS" src="" class="iFrameWSStyle"></iframe>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 30px">
+                    ERP_CM</td>
+                <td style="width: 438px;">
+                <label id="ERP_CM_Page_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="ERP_CM_Page" src="" class="iFramePageStyle"></iframe>
+                </td>
+                <td style="width: 101px;">
+                <label id="ERP_CM_WS_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="ERP_CM_WS" src="" class="iFrameWSStyle"></iframe>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 30px">
+                    ERP_YF</td>
+                <td style="width: 438px;">
+                <label id="ERP_YF_Page_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="ERP_YF_Page" src="" class="iFramePageStyle"></iframe>
+                </td>
+                <td style="width: 101px;">
+                <label id="ERP_YF_WS_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="ERP_YF_WS" src="" class="iFrameWSStyle"></iframe>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 30px">
+                    ERP_T</td>
+                <td style="width: 438px;">
+                <label id="ERP_T_Page_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="ERP_T_Page" src="" class="iFramePageStyle"></iframe>
+                </td>
+                <td style="width: 101px;">
+                <label id="ERP_T_WS1_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="ERP_T_WS1" src="" class="iFrameWSStyle"></iframe><BR>
+                <label id="ERP_T_WS2_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="ERP_T_WS2" src="" class="iFrameWSStyle"></iframe><BR>
+                <label id="ERP_T_WS3_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="ERP_T_WS3" src="" class="iFrameWSStyle"></iframe>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 30px">
+                    ERP_E10</td>
+                <td style="width: 438px;">
+                <label id="ERP_E10_Page_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="ERP_E10_Page" src="" class="iFramePageStyle"></iframe>
+                </td>
+                <td style="width: 101px;">
+                <label id="ERP_E10_WS_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="ERP_E10_WS" src="" class="iFrameWSStyle"></iframe>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 30px">
+                    EAI</td>
+                <td style="width: 438px;">
+                <label id="EAI_Page_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="EAI_Page" src="" class="iFramePageStyle"></iframe>
+                </td>
+                <td style="width: 101px;">
+                <label id="EAI_WS_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="EAI_WS" src="" class="iFrameWSStyle"></iframe>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 30px">
+                    Portal</td>
+                <td style="width: 438px;">
+                <label id="Portal_Page_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="Portal_Page" src="" class="iFramePageStyle"></iframe>
+                </td>
+                <td style="width: 101px;">
+                <label id="Portal_WS_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="Portal_WS" src="" class="iFrameWSStyle"></iframe>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 30px;">
+                    BPM.Java</td>
+                <td style="width: 438px;">
+                <label id="BPMJava_Page_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="BPMJava_Page" src="" class="iFramePageStyle"></iframe>
+                </td>
+                <td style="width: 59px;">
+                <label id="BPMJava_WS_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="BPMJava_WS" src="" class="iFrameWSStyle"></iframe>
+                </td>
+            </tr>
+            <tr>
+                 <td style="width: 30px;">
+                    PLM</td>
+                <td id="PLM_Page_TD" style="width: 438px;">
+                <label id="PLM_Page_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="PLM_Page" src="" class="iFramePageStyle"></iframe>
+                </td>
+                <td id="PLM_WS_TD" style="width: 59px;">
+                <label id="PLM_WS_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="PLM_WS" src="" class="iFrameWSStyle"></iframe>
+                </td>
+            </tr>
+             <tr>
+                <td style="width: 30px;">
+                    BPM.Net</td>
+                <td style="width: 438px;">
+                <label id="BPMNet_Page_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="BPMNet_Page" src="" class="iFramePageStyle"></iframe>
+                </td>
+                <td style="width: 59px;">
+                <label id="BPMNet_WS_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="BPMNet_WS" src="" class="iFrameWSStyle"></iframe>
+                </td>
+            </tr>
+            <!--
+            <tr>
+                <td style="width: 30px;">
+                    BI</td>
+                <td style="width: 438px;">
+                <label id="BI_Page_Label" onclick="OpenWinForDetail(this.id)">杆縒ミVMぃ穦籔ERP/ERPII杆癬</label><BR>
+                <iframe id="BI_Page" src="" class="iFramePageStyle" visible="false"></iframe>
+                </td>
+                <td style="width: 59px;">
+                <label id="BI_WS_Label" onclick="OpenWinForDetail(this.id)">杆縒ミVMぃ穦籔ERP/ERPII杆癬</label><BR>
+                <iframe id="BI_WS" src="" class="iFrameWSStyle" visible="false"></iframe>
+                </td>
+            </tr>
+            -->
+            <tr>
+                <td style="width: 30px;">
+                    CRM</td>
+                <td style="width: 438px;">
+                <label id="CRM_Page_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="CRM_Page" src="" class="iFramePageStyle"></iframe>
+                </td>
+                <td style="width: 59px;">
+                <label id="CRM_WS_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="CRM_WS" src="" class="iFrameWSStyle"></iframe>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 30px;">
+                    HRM</td>
+                <td style="width: 438px;">
+                <label id="HRM_Page_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="HRM_Page" src="" class="iFramePageStyle"></iframe>
+                </td>
+                <td style="width: 59px;">
+                <label id="HRM_WS_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="HRM_WS" src="" class="iFrameWSStyle"></iframe>
+                </td>
+            </tr>
+             <tr>
+                <td style="width: 30px;">
+                    ESS</td>
+                <td style="width: 438px;">
+                <label id="ESS_Page_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="ESS_Page" src="" class="iFramePageStyle"></iframe>
+                </td>
+                <td style="width: 59px;">
+                <label id="ESS_WS_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="ESS_WS" src="" class="iFrameWSStyle"></iframe>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 30px;">
+                    MB</td>
+                <td style="width: 438px;">
+                <label id="MB_Page_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="MB_Page" src="" class="iFramePageStyle"></iframe>
+                </td>
+                <td style="width: 59px;">
+                <label id="MB_WS_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="MB_WS" src="" class="iFrameWSStyle"></iframe>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 30px;">
+                    SFT</td>
+                <td style="width: 438px;">
+                <label id="SFT_Page_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="SFT_Page" src="" class="iFramePageStyle"></iframe>
+                </td>
+                <td style="width: 59px;">
+                <label id="SFT_WS_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="SFT_WS" src="" class="iFrameWSStyle"></iframe>
+                </td>
+            </tr>
+             <tr>
+                <td style="width: 30px;">
+                    APS</td>
+                <td style="width: 438px;">
+                <label id="APS_Page_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="APS_Page" src="" class="iFramePageStyle"></iframe>
+                </td>
+                <td style="width: 59px;">
+                <label id="APS_WS_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="APS_WS" src="" class="iFrameWSStyle"></iframe>
+                </td>
+            </tr>
+             <tr>
+                <td style="width: 30px;">
+                    EKB</td>
+                <td style="width: 438px;">
+                <label id="EKB_Page_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="EKB_Page" src="" class="iFramePageStyle"></iframe>
+                </td>
+                <td style="width: 59px;">
+                <label id="EKB_WS_Label" onclick="OpenWinForDetail(this.id)"></label><BR>
+                <iframe id="EKB_WS" src="" class="iFrameWSStyle"></iframe>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
